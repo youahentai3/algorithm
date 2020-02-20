@@ -15,6 +15,273 @@ public class Offer
 //        System.out.println();
     }
 
+    public static ListNode FindKthToTail(ListNode head,int k)
+    {
+        if(head==null || k<1)
+            return null;
+        ListNode p1=head,p2=head;
+        for(int i=0;i<k-1;i++)
+        {
+            p2=p2.next;
+            if(p2==null)
+                return null;
+        }
+        while (p2.next!=null)
+        {
+            p1=p1.next;
+            p2=p2.next;
+        }
+        return p1;
+    }
+
+    public static void reOrderArray(int [] array)
+    {
+        int be=0,en=array.length-1;
+
+        while (be<en)
+        {
+            while (be<en && (array[be]&1)!=0)
+                be++;
+            while (be<en && (array[en]&1)==0)
+                en--;
+            if(be<en)
+            {
+                int te=array[be];
+                array[be]=array[en];
+                array[en]=te;
+            }
+        }
+    }
+
+    static boolean flag;
+    public static boolean isNumeric(char[] str)
+    {
+        if(str==null)
+            return false;
+        int k=check2(str,0);
+        boolean nu=flag;
+
+        if(k<str.length && str[k]=='.')
+        {
+            k++;
+            k=check1(str,k);
+            nu=(flag || nu);
+        }
+        if(k<str.length && (str[k]=='e' || str[k]=='E'))
+        {
+            k++;
+            k=check2(str,k);
+            nu=(flag && nu);
+        }
+
+        return (nu && k==str.length);
+    }
+
+    private static int check1(char[] str,int k)
+    {
+        int te=k;
+        while (k<str.length && str[k]>='0' && str[k]<='9')
+            k++;
+
+        if(te==k)
+            flag=false;
+        else
+            flag=true;
+        return k;
+    }
+
+    private static int check2(char[] str,int k)
+    {
+        if(k<str.length && (str[k]=='+' || str[k]=='-'))
+            k++;
+        return check1(str,k);
+    }
+
+    public static boolean match1(char[] str, char[] pattern)
+    {
+        if(str==null || pattern==null)
+            return false;
+
+        return matchCore(str,pattern,0,0);
+    }
+
+    private static boolean matchCore(char[] str,char[] pattern,int k1,int k2)
+    {
+        if(k1==str.length && k2==pattern.length)
+            return true;
+        if((k1!=str.length && k2==pattern.length))
+            return false;
+
+        if(k2<pattern.length-1 && pattern[k2+1]=='*')
+        {
+            if(k1<str.length && (str[k1]==pattern[k2] || pattern[k2]=='.'))
+            {
+                return (matchCore(str,pattern,k1,k2+2) || matchCore(str, pattern, k1+1, k2+2) || matchCore(str, pattern, k1+1, k2));
+            }
+            else
+                return matchCore(str, pattern, k1, k2+2);
+        }
+        else
+        {
+            if(k1<str.length && (str[k1]==pattern[k2] || pattern[k2]=='.'))
+                return matchCore(str, pattern, k1+1, k2+1);
+            else
+                return false;
+        }
+    }
+
+    public static void printMax(int n)
+    {
+        char[] ch=new char[n];
+        printM(ch,0);
+    }
+
+    private static void printM(char[] ch,int k)
+    {
+        if (k == ch.length)
+        {
+            System.out.print(new String(ch)+" ");
+            return;
+        }
+
+        for(int i=0;i<10;i++)
+        {
+            ch[k]=(char)('0'+i);
+            printM(ch,k+1);
+        }
+    }
+
+    public static double Power(double base, int exponent)
+    {
+        if(Math.abs(base-0.0)<1e-5)
+        {
+            if (exponent <= 0.0) return 0.0;
+            else return 0.0;
+        }
+        if(exponent==0)
+            return 1.0;
+        boolean flag=true;
+        if(exponent<0.0)
+        {
+            flag=false;
+            exponent=Math.abs(exponent);
+        }
+        double[] a=new double[exponent];
+        a[0]=1.0;
+        a[1]=base;
+
+        double te=pow(base,exponent,a);
+        if(!flag)
+            te=1.0/te;
+
+        return te;
+    }
+
+    private static double pow(double base,int exponent,double[] a)
+    {
+        if(exponent==0)
+            return 1;
+        if(exponent==1)
+            return base;
+
+        int b=(exponent>>1);
+        if(Math.abs(a[b]-0.0)<1e-5)
+            a[b]=pow(base,b,a);
+        if((exponent&1)==0)
+            return a[b]*a[b];
+        else
+            return a[b]*a[b]*base;
+    }
+
+    public static int NumberOf1(int n)
+    {
+        int flag=1,cou=0;
+
+        while (flag!=0)
+        {
+            if((n&flag)!=0)
+                cou++;
+            flag<<=1;
+        }
+
+        return cou;
+    }
+
+    public static int cutRope(int target)
+    {
+        if(target<2)
+            return 0;
+        else if(target==2)
+            return 1;
+        int[] products=new int[target+1];
+
+        products[0]=0;
+        products[1]=1;
+        products[2]=2;
+        //products[3]=2;
+        for(int i=3;i<products.length;i++)
+        {
+            int max=0;
+            for(int j=1;j<=i/2;j++)
+            {
+                int te=products[j]*products[i-j];
+                if(te>max)
+                    max=te;
+            }
+            if(i<products.length-1 && max<i)
+                max=i;
+            products[i]=max;
+        }
+        return products[target];
+    }
+
+    static boolean[] visited;
+    public static int movingCount(int threshold, int rows, int cols)
+    {
+        visited=new boolean[rows*cols];
+        int re=0;
+
+        re=moving(threshold,rows,cols,0,0);
+
+        return re;
+    }
+
+    private static int moving(int threshold,int rows,int cols,int k1,int k2)
+    {
+        int re=0,index=k1*cols+k2;
+        int a=getD(k1),b=getD(k2);
+        if(!visited[index] && a+b<=threshold)
+        {
+            visited[index]=true;
+            re++;
+        }
+        else
+            return re;
+
+        if(k2>0)
+            re+=moving(threshold, rows, cols, k1, k2-1);
+        if(k1<rows-1)
+            re+=moving(threshold, rows, cols, k1+1, k2);
+        if(k2<cols-1)
+            re+=moving(threshold, rows, cols, k1, k2+1);
+        if(k1>0)
+            re+=moving(threshold, rows, cols, k1-1, k2);
+        return re;
+    }
+
+    private static int getD(int a)
+    {
+        int re=0;
+
+        while (a>0)
+        {
+            re+=(a%10);
+            a/=10;
+        }
+
+        return re;
+    }
+
     public static ListNode deleteNode(ListNode head, ListNode tobeDelete)
     {
         if(head==null || tobeDelete==null)
@@ -24,6 +291,7 @@ public class Offer
         {
             tobeDelete.val=tobeDelete.next.val;
             tobeDelete.next=tobeDelete.next.next;
+            return head;
         }
         else
         {
@@ -111,7 +379,7 @@ public class Offer
         return pHead;*/
     }
 
-    static boolean[] visited;
+  //  static boolean[] visited;
 
     public static boolean hasPath(char[] matrix, int rows, int cols, char[] str)
     {
