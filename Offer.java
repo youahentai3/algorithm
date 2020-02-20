@@ -97,7 +97,7 @@ public class Offer
         return check1(str,k);
     }
 
-    public static boolean match1(char[] str, char[] pattern)
+    public static boolean match(char[] str, char[] pattern)
     {
         if(str==null || pattern==null)
             return false;
@@ -593,43 +593,6 @@ public class Offer
             return;
         printA(re,node.next);
         re.add(node.val);
-    }
-    public static boolean match(char[] str, char[] pattern)
-    {
-        boolean[][] a=new boolean[pattern.length+1][str.length+1];
-        a[0][0]=true;
-
-        for(int i=1;i<a.length;i++)
-            a[i][0]=false;
-        for(int i=1;i<a[0].length;i++)
-            a[0][i]=false;
-        for (int i=2;i<a.length;i++)
-        {
-            if(str[i-1]=='*')
-                a[i][0]=a[i-2][0];
-        }
-
-        for(int i=1;i<a.length;i++)
-        {
-            for(int j=1;j<a[i].length;j++)
-            {
-                if(pattern[i-1]==str[j-1] || pattern[i-1]=='.')
-                {
-                    a[i][j]=a[i-1][j-1];
-                }
-                else if(pattern[i-1]=='*')
-                {
-                    if(pattern[i-2]==str[j-1])
-                    {
-                        a[i][j]=(a[i-2][j] || a[i-1][j] || a[i][j-1]);
-                    }
-                    else
-                        a[i][j]=a[i-2][j];
-                }
-            }
-        }
-
-        return a[a.length-1][a[0].length-1];
     }
 
     public static String replaceSpace(StringBuffer str)
